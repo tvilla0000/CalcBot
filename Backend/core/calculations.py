@@ -148,6 +148,8 @@ class Expression:
     def take_integral(self, variable, limits=None):
         x = symbols(variable)
         expr = sympify(self.expression, locals={'x': symbols(f"{variable}")})
+
+        # If Limits, take the expression and integrate with respect to x over the interval [lower_bound, upper_bound].
         if limits:
             lower_bound, upper_bound = limits
             integral = integrate(expr, (x, lower_bound, upper_bound))
@@ -158,6 +160,8 @@ class Expression:
                 f" Step 3: Integrate The Expression: {self.expression} With Respect To {variable} Over The Interval [{lower_bound}, {upper_bound}] \n"
                 f" Result: {pretty(integral)}"
             )
+        
+        # If No Limits, take the expression and integrate with respect to x. (Indefinite Integral) 
         else:
             integral = integrate(expr, x)
             steps = (
