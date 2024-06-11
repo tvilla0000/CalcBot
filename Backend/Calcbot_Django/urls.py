@@ -1,5 +1,5 @@
 """
-URL configuration for Calcbot_flutter project.
+URL configuration for Calcbot_Django project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.0/topics/http/urls/
