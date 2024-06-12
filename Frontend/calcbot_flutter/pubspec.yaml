@@ -31,6 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^0.13.3
+  lottie: ^1.2.1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -53,7 +54,11 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
+  assets:
+  - assets/calcbot-404.json
+  - assets/calcbot-page-transition.json
+  - assets/calcbot-chill.json
+  - assets/calcbot-greeting.json
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
