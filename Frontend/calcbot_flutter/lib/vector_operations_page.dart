@@ -1,3 +1,4 @@
+import 'package:calcbot_flutter/my_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'api_service.dart';
@@ -17,6 +18,46 @@ class VectorOperationsPage extends StatefulWidget {
     String _selectedOperation = 'dot_product';
     List<int> _vector1 = [0, 0, 0];
     List<int> _vector2 = [0, 0, 0];
+    bool _isTransitioning = false;
+
+    void _navigateBack(BuildContext context) async {
+      setState(() {
+        _isTransitioning = true;
+      });
+
+      await Future.delayed(const Duration(milliseconds: 1000));
+      Navigator.push(
+      context,
+      PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => const MyHomePage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return Stack(
+              children: [
+                Center(
+                  child: FractionallySizedBox(
+                    widthFactor: 2.0,
+                    heightFactor: 2.0,
+                    child: Lottie.asset(
+                      'assets/calcbot-page-transition.json',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+                FadeTransition(
+                  opacity: animation,
+                  child: child,
+                ),
+              ],
+            );
+          },
+          // transitionDuration: const Duration(milliseconds: 1500),
+        ),
+        ).then((_) {
+          setState(() {
+            _isTransitioning = false; 
+          });
+        });
+    }
 
     void _performVectorOperation() async {
       setState(() {
@@ -24,6 +65,7 @@ class VectorOperationsPage extends StatefulWidget {
       });
 
       try {
+        await Future.delayed( const Duration(seconds: 1));
         final response = await _apiService.performVectorOperation(
           _selectedOperation,
           [_vector1, _vector2],
@@ -47,11 +89,31 @@ class VectorOperationsPage extends StatefulWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Vector Operations'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => _navigateBack(context),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: _isTransitioning 
+      ? Center(
+        child: FractionallySizedBox(
+          widthFactor: 2.0,
+          heightFactor: 2.0,
+          child: Lottie.asset(
+            'assets/calcbot-page-transition.json',
+            fit: BoxFit.contain,
+          ),
+        ),
+      )
+      
+      : Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: IntrinsicHeight(
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             const Text(
               'Perform Vector Operations',
@@ -69,6 +131,10 @@ class VectorOperationsPage extends StatefulWidget {
                   'dot_product',
                   'cross_product',
                   'magnitude',
+                  'unit_vector',
+                  'triple_scalar',
+                  'determine_relationship',
+                  'find_angle',
                 ].map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
@@ -79,7 +145,7 @@ class VectorOperationsPage extends StatefulWidget {
                   setState(() {
                     _selectedOperation = newValue!;
                   });
-                },
+                },  
               ),
               const SizedBox(height: 20),
               _buildVectorInputField(
@@ -90,7 +156,7 @@ class VectorOperationsPage extends StatefulWidget {
                   });
                 },
               ),
-              if (_selectedOperation != 'magnitude')
+              if (_selectedOperation != 'magnitude' && _selectedOperation != 'unit_vector')
               _buildVectorInputField(
                 label: 'Vector 2 (comma-separated). For Example: 4, 5, 6',
                 onChanged: (value) {
@@ -105,8 +171,8 @@ class VectorOperationsPage extends StatefulWidget {
               ? Center(
                 child: Lottie.asset(
                   'assets/calcbot-greeting.json',
-                  width: 150,
-                  height: 150,
+                  width: 300,
+                  height: 300,
                 ),
               )
             : Column(
@@ -136,9 +202,12 @@ class VectorOperationsPage extends StatefulWidget {
             //  Add Detailed Steps For Operation Here
             ],
           ),
-        )
-      );
-    }
+          ),
+        ),
+      )
+    ),
+  );
+}
 
     Widget _buildVectorInputField({
       required String label,
